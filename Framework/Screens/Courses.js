@@ -1,11 +1,10 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
-import { Theme } from '../Components/Theme'
 
-export function Homescreen() {
+export function Courses() {
     return (
         <View>
-            <Text style={{ color: Theme.colors.primary }}>Homescreen</Text>
+            <Text>Courses</Text>
         </View>
     )
 }

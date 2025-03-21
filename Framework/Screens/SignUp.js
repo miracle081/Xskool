@@ -1,11 +1,10 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
-import { Theme } from '../Components/Theme'
 
-export function Homescreen() {
+export function SignUp() {
     return (
         <View>
-            <Text style={{ color: Theme.colors.primary }}>Homescreen</Text>
+            <Text>SignUp</Text>
         </View>
     )
 }
