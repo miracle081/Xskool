@@ -23,7 +23,6 @@ function AppProvider({ children }) {
             preloader, setPreloader,
 
             // Funtions
-            getUserInfo,
         }}>
             {children}
         </AppContext.Provider>
