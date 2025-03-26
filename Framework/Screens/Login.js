@@ -64,17 +64,18 @@ export function Login({ navigation }) {
                             <Formik
                                 initialValues={{ email: "", password: "" }}
                                 onSubmit={(value) => {
-                                    setPreloader(true);
-                                    signInWithEmailAndPassword(auth, value.email, value.password)
-                                        .then((data) => {
-                                            setPreloader(false);
-                                            setUserUID(data.user.uid);
-                                            navigation.replace("HomeScreen");
-                                        })
-                                        .catch((e) => {
-                                            setPreloader(false);
-                                            Alert.alert("Access denied!", errorMessage(e.code));
-                                        });
+                                    navigation.navigate("HomeScreen")
+                                    // setPreloader(true);
+                                    // signInWithEmailAndPassword(auth, value.email, value.password)
+                                    //     .then((data) => {
+                                    //         setPreloader(false);
+                                    //         setUserUID(data.user.uid);
+                                    //         navigation.replace("HomeScreen");
+                                    //     })
+                                    //     .catch((e) => {
+                                    //         setPreloader(false);
+                                    //         Alert.alert("Access denied!", errorMessage(e.code));
+                                    //     });
                                 }}
                                 validationSchema={validation}
                             >
@@ -250,7 +251,7 @@ const styles = StyleSheet.create({
         },
         shadowOpacity: 0.1,
         shadowRadius: 10,
-        elevation: 5,
+        elevation: Platform.OS == "android" ? 5 : null,
     },
     form: {
         width: "100%",
@@ -321,7 +322,7 @@ const styles = StyleSheet.create({
         },
         shadowOpacity: 0.3,
         shadowRadius: 8,
-        elevation: 5,
+        elevation: Platform.OS == "android" ? 5 : null,
     },
     loginButtonText: {
         fontSize: 16,
@@ -369,7 +370,7 @@ const styles = StyleSheet.create({
         },
         shadowOpacity: 0.05,
         shadowRadius: 3,
-        elevation: 2,
+        elevation: Platform.OS == "android" ? 2 : null,
     },
     socialIcon: {
         width: 24,

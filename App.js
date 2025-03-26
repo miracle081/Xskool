@@ -11,6 +11,9 @@ import { AppProvider } from "./global/globalVariables";
 import { RootSiblingParent } from "react-native-root-siblings";
 import { Fascinate_400Regular } from "@expo-google-fonts/fascinate"
 import { Login } from "./Framework/Screens/Login";
+import { HomeScreen } from "./Framework/Screens/Homescreen";
+import { Intro } from "./Framework/Screens/Intro";
+import { StackNavigator } from "./Framework/Navigators/Stack";
 
 
 LogBox.ignoreLogs(["ViewPropTypes will be removed from React Native, along with all other PropTypes. We recommend that you migrate away from PropTypes and switch to a type system like TypeScript. If you need to continue using ViewPropTypes, migrate to the 'deprecated-react-native-prop-types' package."])
@@ -59,8 +62,7 @@ export default function App() {
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           style={{ flex: 1 }}
         >
-          {/* <StackNavigator /> */}
-          <Login />
+          <StackNavigator />
           <Preloader />
         </KeyboardAvoidingView>
       </AppProvider>
