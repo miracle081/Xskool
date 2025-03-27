@@ -10,9 +10,6 @@ import { Preloader } from "./Framework/Components/Preloader";
 import { AppProvider } from "./global/globalVariables";
 import { RootSiblingParent } from "react-native-root-siblings";
 import { Fascinate_400Regular } from "@expo-google-fonts/fascinate"
-import { Login } from "./Framework/Screens/Login";
-import { HomeScreen } from "./Framework/Screens/Homescreen";
-import { Intro } from "./Framework/Screens/Intro";
 import { StackNavigator } from "./Framework/Navigators/Stack";
 
 
