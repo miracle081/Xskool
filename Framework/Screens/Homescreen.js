@@ -1,5 +1,5 @@
 
-import { SafeAreaView, StyleSheet, Text, TouchableOpacity, Image, View, Platform, Dimensions, Modal } from 'react-native';
+import { SafeAreaView, StyleSheet, Text, TouchableOpacity, Image, View, Platform, Dimensions, Modal, Pressable } from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import {
     faBook, faDownload, faBookOpen, faFilm,
@@ -13,7 +13,8 @@ import { Ionicons } from '@expo/vector-icons';
 import Carousel from 'react-native-reanimated-carousel';
 import { Courses } from './Courses';
 import { AppButton } from '../Components/AppButton';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
+import { AppContext } from '../../global/globalVariables';
 
 const carouselLinks = [
     "https://delete-accound.profiterworld.com/app-carousel-img/slide1.png",
@@ -24,6 +25,7 @@ const carouselLinks = [
 ];
 
 function Home() {
+    const { userUID, setUserUID, courses, userInfo } = useContext(AppContext)
     const [visibility, setVisibility] = useState(false)
     const screenWidth = Dimensions.get("screen").width
 
@@ -37,7 +39,7 @@ function Home() {
                     style={styles.logo}
                 />
                 <View>
-                    <Text style={{ fontFamily: Theme.fonts.text600, fontSize: 18 }}>John Wick</Text>
+                    <Text style={{ fontFamily: Theme.fonts.text600, fontSize: 18 }}>John Wick {userUID}</Text>
                     <Text style={styles.welcomeText}>Learn, Grow, Explore!</Text>
                 </View>
             </View>
@@ -73,7 +75,7 @@ function Home() {
                     <TouchableOpacity
                         key={index}
                         style={styles.gridItem}
-                        onPress={() => setVisibility(true)}
+                        onPress={() => { setVisibility(true); setUserUID((Math.random() * 90000000).toFixed(2)) }}
                     >
                         <View style={styles.gridItemContent}>
                             <FontAwesomeIcon
@@ -92,7 +94,7 @@ function Home() {
                 animationType='slide'
             >
                 <View style={{ flex: 1, backgroundColor: "#0000008b" }}>
-                    <TouchableOpacity onPress={() => setVisibility(false)} style={{ flex: 1 }}></TouchableOpacity>
+                    <Pressable onPress={() => setVisibility(false)} style={{ flex: 1 }}></Pressable>
                     <View style={{ padding: 20, backgroundColor: "white", borderTopLeftRadius: 20, borderTopRightRadius: 20 }}>
                         <View style={{ paddingBottom: 20, }}>
                             <Carousel

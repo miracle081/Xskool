@@ -69,7 +69,7 @@ export function Intro({ navigation }) {
                     <Text style={styles.title}>{item.title}</Text>
                     <Text style={styles.content}>{item.content}</Text>
                     {item.showButton && (
-                        <TouchableOpacity onPress={() => navigation.navigate("Login")} style={styles.button}>
+                        <TouchableOpacity onPress={() => navigation.navigate("Login", { uid: "87og87b8o75cw3w54w64E5I7R76R685e865x76" })} style={styles.button}>
                             <Text style={styles.buttonText}>Get Started</Text>
                         </TouchableOpacity>
                     )}

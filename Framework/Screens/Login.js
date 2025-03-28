@@ -33,13 +33,15 @@ const validation = yup.object({
 });
 
 
-export function Login({ navigation }) {
+export function Login({ navigation, route }) {
     const { setPreloader, setUserUID } = useContext(AppContext);
     const [showPassword, setShowPassword] = useState(false);
 
     const handleTwitterLogin = async () => {
 
     };
+
+    // const { uid } = route.params
 
     return (
         <SafeAreaView style={styles.safeArea}>
@@ -85,6 +87,7 @@ export function Login({ navigation }) {
                                             <View style={styles.headerContainer}>
                                                 <Text style={styles.header}>Welcome Back</Text>
                                                 <Text style={styles.subheader}>
+                                                    {/* {uid + '\n'} */}
                                                     Sign in to continue to YotaPoint
                                                 </Text>
                                             </View>
