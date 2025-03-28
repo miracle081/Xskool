@@ -1,5 +1,5 @@
 
-import { SafeAreaView, StyleSheet, Text, TouchableOpacity, Image, View, Platform, Dimensions } from 'react-native';
+import { SafeAreaView, StyleSheet, Text, TouchableOpacity, Image, View, Platform, Dimensions, Modal } from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import {
     faBook, faDownload, faBookOpen, faFilm,
@@ -12,6 +12,8 @@ import { Profile } from './Profile';
 import { Ionicons } from '@expo/vector-icons';
 import Carousel from 'react-native-reanimated-carousel';
 import { Courses } from './Courses';
+import { AppButton } from '../Components/AppButton';
+import { useState } from 'react';
 
 const carouselLinks = [
     "https://delete-accound.profiterworld.com/app-carousel-img/slide1.png",
@@ -22,6 +24,7 @@ const carouselLinks = [
 ];
 
 function Home() {
+    const [visibility, setVisibility] = useState(false)
     const screenWidth = Dimensions.get("screen").width
 
 
@@ -70,7 +73,7 @@ function Home() {
                     <TouchableOpacity
                         key={index}
                         style={styles.gridItem}
-                    // You can add onPress handlers here later
+                        onPress={() => setVisibility(true)}
                     >
                         <View style={styles.gridItemContent}>
                             <FontAwesomeIcon
@@ -83,6 +86,32 @@ function Home() {
                     </TouchableOpacity>
                 ))}
             </View>
+            <Modal
+                visible={visibility}
+                transparent={true}
+                animationType='slide'
+            >
+                <View style={{ flex: 1, backgroundColor: "#0000008b" }}>
+                    <TouchableOpacity onPress={() => setVisibility(false)} style={{ flex: 1 }}></TouchableOpacity>
+                    <View style={{ padding: 20, backgroundColor: "white", borderTopLeftRadius: 20, borderTopRightRadius: 20 }}>
+                        <View style={{ paddingBottom: 20, }}>
+                            <Carousel
+                                loop
+                                width={screenWidth - 40}
+                                height={170}
+                                autoPlay={true}
+                                data={carouselLinks}
+                                style={{ borderRadius: 10 }}
+                                scrollAnimationDuration={2000}
+                                renderItem={({ index }) => (
+                                    <Image style={{ width: '100%', height: 170, borderRadius: 10, }} source={{ uri: carouselLinks[index] }} defaultSource={require("../../assets/slide4.png")} />
+                                )}
+                            />
+                            <AppButton onPress={() => setVisibility(false)} style={{ marginTop: 20 }}>Close</AppButton>
+                        </View>
+                    </View>
+                </View>
+            </Modal>
         </SafeAreaView>
     );
 }
@@ -158,9 +187,6 @@ export function HomeScreen() {
                     }
                     else if (route.name === 'Courses') {
                         iconName = focused ? 'book' : 'file-tray-full-outline';
-                    }
-                    else if (route.name === 'Cart') {
-                        iconName = focused ? 'cart' : 'cart-outline';
                     }
                     else if (route.name === 'Profile') {
                         iconName = focused ? 'person' : 'person-outline';
