@@ -15,7 +15,7 @@ import {
 import { TextInput } from "react-native-paper";
 import { Theme } from "../Components/Theme";
 import { AppContext } from "../../global/globalVariables";
-import { Formik } from "formik";
+import { Formik, } from "formik";
 import * as yup from "yup";
 import { errorMessage } from "../Components/formatErrorMessage";
 import { Feather, MaterialIcons, FontAwesome } from "@expo/vector-icons";
@@ -24,6 +24,8 @@ import { Feather, MaterialIcons, FontAwesome } from "@expo/vector-icons";
 import { LinearGradient } from 'expo-linear-gradient';
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faGoogle, faXTwitter } from "@fortawesome/free-brands-svg-icons";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../Firebase/settings";
 
 const { width, height } = Dimensions.get('window');
 
@@ -66,18 +68,14 @@ export function Login({ navigation, route }) {
                             <Formik
                                 initialValues={{ email: "", password: "" }}
                                 onSubmit={(value) => {
-                                    navigation.navigate("HomeScreen")
-                                    // setPreloader(true);
-                                    // signInWithEmailAndPassword(auth, value.email, value.password)
-                                    //     .then((data) => {
-                                    //         setPreloader(false);
-                                    //         setUserUID(data.user.uid);
-                                    //         navigation.replace("HomeScreen");
-                                    //     })
-                                    //     .catch((e) => {
-                                    //         setPreloader(false);
-                                    //         Alert.alert("Access denied!", errorMessage(e.code));
-                                    //     });
+                                    createUserWithEmailAndPassword(auth, value.email, value.password)
+                                        .then(() => {
+                                            navigation.navigate("HomeScreen")
+                                        })
+                                        .catch(e => {
+                                            console.log(e);
+                                            Alert.alert("Access denied!", errorMessage(e.code));
+                                        })
                                 }}
                                 validationSchema={validation}
                             >
