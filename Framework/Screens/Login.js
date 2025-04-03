@@ -68,11 +68,14 @@ export function Login({ navigation, route }) {
                             <Formik
                                 initialValues={{ email: "", password: "" }}
                                 onSubmit={(value) => {
-                                    createUserWithEmailAndPassword(auth, value.email, value.password)
+                                    setPreloader(true);
+                                    signInWithEmailAndPassword(auth, value.email, value.password)
                                         .then(() => {
+                                            setPreloader(false);
                                             navigation.navigate("HomeScreen")
                                         })
                                         .catch(e => {
+                                            setPreloader(false);
                                             console.log(e);
                                             Alert.alert("Access denied!", errorMessage(e.code));
                                         })
@@ -205,7 +208,7 @@ export function Login({ navigation, route }) {
 
                         <View style={styles.signupContainer}>
                             <Text style={styles.signupText}>Don't have an account? </Text>
-                            <TouchableOpacity onPress={() => navigation.navigate("Signup")}>
+                            <TouchableOpacity onPress={() => navigation.navigate("SignUp")}>
                                 <Text style={styles.signupLink}>Sign up</Text>
                             </TouchableOpacity>
                         </View>
