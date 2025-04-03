@@ -1,5 +1,5 @@
 
-import { SafeAreaView, StyleSheet, Text, TouchableOpacity, Image, View, Platform, Dimensions, Modal, Pressable } from 'react-native';
+import { SafeAreaView, StyleSheet, Text, TouchableOpacity, Image, View, Platform, Dimensions, Modal, Pressable, Alert } from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import {
     faBook, faDownload, faBookOpen, faFilm,
@@ -13,8 +13,11 @@ import { Ionicons } from '@expo/vector-icons';
 import Carousel from 'react-native-reanimated-carousel';
 import { Courses } from './Courses';
 import { AppButton } from '../Components/AppButton';
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { AppContext } from '../../global/globalVariables';
+import { doc, getDoc, onSnapshot } from 'firebase/firestore';
+import { errorMessage } from '../Components/formatErrorMessage';
+import { db } from '../Firebase/settings';
 
 const carouselLinks = [
     "https://delete-accound.profiterworld.com/app-carousel-img/slide1.png",
@@ -25,9 +28,32 @@ const carouselLinks = [
 ];
 
 function Home() {
-    const { userUID, setUserUID, courses, userInfo } = useContext(AppContext)
+    const { userUID, setUserUID, courses, setUserInfo, userInfo, setPreloader } = useContext(AppContext)
     const [visibility, setVisibility] = useState(false)
-    const screenWidth = Dimensions.get("screen").width
+    const screenWidth = Dimensions.get("screen").width;
+
+    useEffect(() => {
+        setPreloader(true);
+        // getDoc(doc(db, "users", userUID))
+        //     .then((doc) => {
+        //         if (doc.exists()) {
+        //             setUserInfo(doc.data())
+        //         }
+        //         setPreloader(false);
+        //     })
+        //     .catch(e => {
+        //         setPreloader(false);
+        //         console.log(e);
+        //         Alert.alert("Registration Failed!", errorMessage(e.code));
+        //     });
+        onSnapshot(doc(db, "users", userUID), (doc) => {
+            setPreloader(false);
+            if (doc.exists()) {
+                setUserInfo(doc.data())
+            }
+        }
+        )
+    }, []);
 
 
     return (
@@ -39,7 +65,7 @@ function Home() {
                     style={styles.logo}
                 />
                 <View>
-                    <Text style={{ fontFamily: Theme.fonts.text600, fontSize: 18 }}>John Wick {userUID}</Text>
+                    <Text style={{ fontFamily: Theme.fonts.text600, fontSize: 18 }}>{userInfo.firstname} {userInfo.lastname}</Text>
                     <Text style={styles.welcomeText}>Learn, Grow, Explore!</Text>
                 </View>
             </View>

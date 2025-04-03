@@ -23,13 +23,14 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faGoogle, faXTwitter } from "@fortawesome/free-brands-svg-icons";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../Firebase/settings";
+import { auth, db } from "../Firebase/settings";
+import { doc, setDoc } from "firebase/firestore";
 
 const { width, height } = Dimensions.get('window');
 
 const validation = yup.object({
-    firstName: yup.string().required("First name is required").min(2).max(30),
-    lastName: yup.string().required("Last name is required").min(2).max(30),
+    firstname: yup.string().required("First name is required").min(2).max(30),
+    lastname: yup.string().required("Last name is required").min(2).max(30),
     phone: yup.string().required("Phone number is required").min(10).max(15),
     email: yup.string().required("Email is required").email("Enter a valid email").min(5).max(30),
     password: yup.string().required("Password is required").min(6, "Password must be at least 6 characters").max(20),
@@ -37,7 +38,7 @@ const validation = yup.object({
         .required("Please confirm your password")
         .oneOf([yup.ref('password'), null], "Passwords must match"),
     address: yup.string().required("Address is required").min(5).max(100),
-    gender: yup.string().required("Please select a gender"),
+    // gender: yup.string().required("Please select a gender"),
 });
 
 export function SignUp({ navigation }) {
@@ -53,230 +54,241 @@ export function SignUp({ navigation }) {
                 colors={['#ffffff', Theme.colors.primary + 40]}
                 style={styles.gradient}
             >
-                <KeyboardAvoidingView
-                    behavior={Platform.OS === "ios" ? "padding" : "height"}
-                    style={styles.keyboardView}
-                >
-                    <ScrollView contentContainerStyle={styles.scrollView}>
-                        <View style={styles.logoContainer}>
-                            <Image
-                                source={require("../../assets/logo.jpg")}
-                                style={styles.logo}
-                                resizeMode="contain"
-                            />
-                        </View>
+                <ScrollView contentContainerStyle={styles.scrollView}>
+                    <View style={styles.logoContainer}>
+                        <Image
+                            source={require("../../assets/logo.jpg")}
+                            style={styles.logo}
+                            resizeMode="contain"
+                        />
+                    </View>
 
-                        <View style={styles.card}>
-                            <Formik
-                                initialValues={{
-                                    firstName: "",
-                                    lastName: "",
-                                    phone: "",
-                                    email: "",
-                                    password: "",
-                                    confirmPassword: "",
-                                    address: "",
-                                    gender: ""
-                                }}
-                                onSubmit={(values) => {
-                                    setPreloader(true);
-                                    createUserWithEmailAndPassword(auth, values.email, values.password)
-                                        .then((userCredential) => {
-                                            const user = userCredential.user;
-                                            // Here you would add additional user data to your database
-                                            setUserUID(user.uid);
+                    <View style={styles.card}>
+                        <Formik
+                            initialValues={{
+                                firstname: "",
+                                lastname: "",
+                                phone: "",
+                                email: "",
+                                password: "",
+                                confirmPassword: "",
+                                address: "",
+                                // gender: ""
+                            }}
+                            onSubmit={(values) => {
+                                setPreloader(true);
+                                createUserWithEmailAndPassword(auth, values.email, values.password)
+                                    .then((userCredential) => {
+                                        const user = userCredential.user.uid;
+                                        //
+                                        setDoc(doc(db, "users", user), {
+                                            firstname: values.firstname,
+                                            lastname: values.lastname,
+                                            phone: values.phone,
+                                            email: values.email,
+                                            address: values.address,
+                                            balance: 0,
+                                            createdAt: new Date().getTime(),
+                                            userUID: user,
+                                        }).then(() => {
                                             setPreloader(false);
+                                            setUserUID(user);
                                             navigation.navigate("HomeScreen");
-                                        })
-                                        .catch(e => {
+                                        }).catch(e => {
                                             setPreloader(false);
                                             console.log(e);
                                             Alert.alert("Registration Failed!", errorMessage(e.code));
                                         });
-                                }}
-                                validationSchema={validation}
-                            >
-                                {(prop) => {
-                                    return (
-                                        <View style={styles.form}>
-                                            <View style={styles.headerContainer}>
-                                                <Text style={styles.header}>Create Account</Text>
-                                                <Text style={styles.subheader}>
-                                                    Sign up to join YotaPoint
-                                                </Text>
-                                            </View>
+                                    })
+                                    .catch(e => {
+                                        setPreloader(false);
+                                        console.log(e);
+                                        Alert.alert("Registration Failed!", errorMessage(e.code));
+                                    });
+                            }}
+                            validationSchema={validation}
+                        >
+                            {(prop) => {
+                                return (
+                                    <View style={styles.form}>
+                                        <View style={styles.headerContainer}>
+                                            <Text style={styles.header}>Create Account</Text>
+                                            <Text style={styles.subheader}>
+                                                Sign up to join YotaPoint
+                                            </Text>
+                                        </View>
 
-                                            {/* First Name */}
-                                            <View style={styles.inputContainer}>
-                                                <View>
-                                                    <Feather name="user" size={20} color={Theme.colors.text2} />
-                                                </View>
-                                                <TextInput
-                                                    style={styles.input}
-                                                    label="First Name"
-                                                    mode="flat"
-                                                    contentStyle={styles.inputContent}
-                                                    underlineStyle={{ display: "none" }}
-                                                    activeUnderlineColor={Theme.colors.primary}
-                                                    onChangeText={prop.handleChange("firstName")}
-                                                    onBlur={prop.handleBlur("firstName")}
-                                                    value={prop.values.firstName}
-                                                    autoCorrect={false}
-                                                />
+                                        {/* First Name */}
+                                        <View style={styles.inputContainer}>
+                                            <View>
+                                                <Feather name="user" size={20} color={Theme.colors.text2} />
                                             </View>
-                                            {prop.touched.firstName && prop.errors.firstName && (
-                                                <Text style={styles.error}>{prop.errors.firstName}</Text>
-                                            )}
+                                            <TextInput
+                                                style={styles.input}
+                                                label="First Name"
+                                                mode="flat"
+                                                contentStyle={styles.inputContent}
+                                                underlineStyle={{ display: "none" }}
+                                                activeUnderlineColor={Theme.colors.primary}
+                                                onChangeText={prop.handleChange("firstname")}
+                                                onBlur={prop.handleBlur("firstname")}
+                                                value={prop.values.firstname}
+                                                autoCorrect={false}
+                                            />
+                                        </View>
+                                        {prop.touched.firstname && prop.errors.firstname && (
+                                            <Text style={styles.error}>{prop.errors.firstname}</Text>
+                                        )}
 
-                                            {/* Last Name */}
-                                            <View style={styles.inputContainer}>
-                                                <View>
-                                                    <Feather name="user" size={20} color={Theme.colors.text2} />
-                                                </View>
-                                                <TextInput
-                                                    style={styles.input}
-                                                    label="Last Name"
-                                                    mode="flat"
-                                                    contentStyle={styles.inputContent}
-                                                    underlineStyle={{ display: "none" }}
-                                                    activeUnderlineColor={Theme.colors.primary}
-                                                    onChangeText={prop.handleChange("lastName")}
-                                                    onBlur={prop.handleBlur("lastName")}
-                                                    value={prop.values.lastName}
-                                                    autoCorrect={false}
-                                                />
+                                        {/* Last Name */}
+                                        <View style={styles.inputContainer}>
+                                            <View>
+                                                <Feather name="user" size={20} color={Theme.colors.text2} />
                                             </View>
-                                            {prop.touched.lastName && prop.errors.lastName && (
-                                                <Text style={styles.error}>{prop.errors.lastName}</Text>
-                                            )}
+                                            <TextInput
+                                                style={styles.input}
+                                                label="Last Name"
+                                                mode="flat"
+                                                contentStyle={styles.inputContent}
+                                                underlineStyle={{ display: "none" }}
+                                                activeUnderlineColor={Theme.colors.primary}
+                                                onChangeText={prop.handleChange("lastname")}
+                                                onBlur={prop.handleBlur("lastname")}
+                                                value={prop.values.lastname}
+                                                autoCorrect={false}
+                                            />
+                                        </View>
+                                        {prop.touched.lastname && prop.errors.lastname && (
+                                            <Text style={styles.error}>{prop.errors.lastname}</Text>
+                                        )}
 
-                                            {/* Phone */}
-                                            <View style={styles.inputContainer}>
-                                                <View>
-                                                    <Feather name="phone" size={20} color={Theme.colors.text2} />
-                                                </View>
-                                                <TextInput
-                                                    style={styles.input}
-                                                    label="Phone Number"
-                                                    mode="flat"
-                                                    contentStyle={styles.inputContent}
-                                                    underlineStyle={{ display: "none" }}
-                                                    activeUnderlineColor={Theme.colors.primary}
-                                                    onChangeText={prop.handleChange("phone")}
-                                                    onBlur={prop.handleBlur("phone")}
-                                                    value={prop.values.phone}
-                                                    keyboardType="phone-pad"
-                                                />
+                                        {/* Phone */}
+                                        <View style={styles.inputContainer}>
+                                            <View>
+                                                <Feather name="phone" size={20} color={Theme.colors.text2} />
                                             </View>
-                                            {prop.touched.phone && prop.errors.phone && (
-                                                <Text style={styles.error}>{prop.errors.phone}</Text>
-                                            )}
+                                            <TextInput
+                                                style={styles.input}
+                                                label="Phone Number"
+                                                mode="flat"
+                                                contentStyle={styles.inputContent}
+                                                underlineStyle={{ display: "none" }}
+                                                activeUnderlineColor={Theme.colors.primary}
+                                                onChangeText={prop.handleChange("phone")}
+                                                onBlur={prop.handleBlur("phone")}
+                                                value={prop.values.phone}
+                                                keyboardType="phone-pad"
+                                            />
+                                        </View>
+                                        {prop.touched.phone && prop.errors.phone && (
+                                            <Text style={styles.error}>{prop.errors.phone}</Text>
+                                        )}
 
-                                            {/* Email */}
-                                            <View style={styles.inputContainer}>
-                                                <View>
-                                                    <Feather name="mail" size={20} color={Theme.colors.text2} />
-                                                </View>
-                                                <TextInput
-                                                    style={styles.input}
-                                                    label="Email Address"
-                                                    mode="flat"
-                                                    contentStyle={styles.inputContent}
-                                                    underlineStyle={{ display: "none" }}
-                                                    activeUnderlineColor={Theme.colors.primary}
-                                                    onChangeText={prop.handleChange("email")}
-                                                    onBlur={prop.handleBlur("email")}
-                                                    value={prop.values.email}
-                                                    autoCapitalize="none"
-                                                    autoCorrect={false}
-                                                    keyboardType="email-address"
-                                                />
+                                        {/* Email */}
+                                        <View style={styles.inputContainer}>
+                                            <View>
+                                                <Feather name="mail" size={20} color={Theme.colors.text2} />
                                             </View>
-                                            {prop.touched.email && prop.errors.email && (
-                                                <Text style={styles.error}>{prop.errors.email}</Text>
-                                            )}
+                                            <TextInput
+                                                style={styles.input}
+                                                label="Email Address"
+                                                mode="flat"
+                                                contentStyle={styles.inputContent}
+                                                underlineStyle={{ display: "none" }}
+                                                activeUnderlineColor={Theme.colors.primary}
+                                                onChangeText={prop.handleChange("email")}
+                                                onBlur={prop.handleBlur("email")}
+                                                value={prop.values.email}
+                                                autoCapitalize="none"
+                                                autoCorrect={false}
+                                                keyboardType="email-address"
+                                            />
+                                        </View>
+                                        {prop.touched.email && prop.errors.email && (
+                                            <Text style={styles.error}>{prop.errors.email}</Text>
+                                        )}
 
-                                            {/* Password */}
-                                            <View style={styles.inputContainer}>
-                                                <View>
-                                                    <Feather name="lock" size={20} color={Theme.colors.text2} />
-                                                </View>
-                                                <TextInput
-                                                    style={styles.input}
-                                                    label="Password"
-                                                    mode="flat"
-                                                    contentStyle={styles.inputContent}
-                                                    underlineStyle={{ display: "none" }}
-                                                    activeUnderlineColor={Theme.colors.primary}
-                                                    onChangeText={prop.handleChange("password")}
-                                                    onBlur={prop.handleBlur("password")}
-                                                    value={prop.values.password}
-                                                    autoCapitalize="none"
-                                                    autoCorrect={false}
-                                                    secureTextEntry={!showPassword}
-                                                    theme={{ colors: { text: Theme.colors.text1, placeholder: Theme.colors.text2 } }}
-                                                />
-                                                <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-                                                    <Feather name={showPassword ? "eye" : "eye-off"} size={20} color={Theme.colors.text2} />
-                                                </TouchableOpacity>
+                                        {/* Password */}
+                                        <View style={styles.inputContainer}>
+                                            <View>
+                                                <Feather name="lock" size={20} color={Theme.colors.text2} />
                                             </View>
-                                            {prop.touched.password && prop.errors.password && (
-                                                <Text style={styles.error}>{prop.errors.password}</Text>
-                                            )}
+                                            <TextInput
+                                                style={styles.input}
+                                                label="Password"
+                                                mode="flat"
+                                                contentStyle={styles.inputContent}
+                                                underlineStyle={{ display: "none" }}
+                                                activeUnderlineColor={Theme.colors.primary}
+                                                onChangeText={prop.handleChange("password")}
+                                                onBlur={prop.handleBlur("password")}
+                                                value={prop.values.password}
+                                                autoCapitalize="none"
+                                                autoCorrect={false}
+                                                secureTextEntry={!showPassword}
+                                                theme={{ colors: { text: Theme.colors.text1, placeholder: Theme.colors.text2 } }}
+                                            />
+                                            <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+                                                <Feather name={showPassword ? "eye" : "eye-off"} size={20} color={Theme.colors.text2} />
+                                            </TouchableOpacity>
+                                        </View>
+                                        {prop.touched.password && prop.errors.password && (
+                                            <Text style={styles.error}>{prop.errors.password}</Text>
+                                        )}
 
-                                            {/* Confirm Password */}
-                                            <View style={styles.inputContainer}>
-                                                <View>
-                                                    <Feather name="lock" size={20} color={Theme.colors.text2} />
-                                                </View>
-                                                <TextInput
-                                                    style={styles.input}
-                                                    label="Confirm Password"
-                                                    mode="flat"
-                                                    contentStyle={styles.inputContent}
-                                                    underlineStyle={{ display: "none" }}
-                                                    activeUnderlineColor={Theme.colors.primary}
-                                                    onChangeText={prop.handleChange("confirmPassword")}
-                                                    onBlur={prop.handleBlur("confirmPassword")}
-                                                    value={prop.values.confirmPassword}
-                                                    autoCapitalize="none"
-                                                    autoCorrect={false}
-                                                    secureTextEntry={!showConfirmPassword}
-                                                    theme={{ colors: { text: Theme.colors.text1, placeholder: Theme.colors.text2 } }}
-                                                />
-                                                <TouchableOpacity onPress={() => setShowConfirmPassword(!showConfirmPassword)}>
-                                                    <Feather name={showConfirmPassword ? "eye" : "eye-off"} size={20} color={Theme.colors.text2} />
-                                                </TouchableOpacity>
+                                        {/* Confirm Password */}
+                                        <View style={styles.inputContainer}>
+                                            <View>
+                                                <Feather name="lock" size={20} color={Theme.colors.text2} />
                                             </View>
-                                            {prop.touched.confirmPassword && prop.errors.confirmPassword && (
-                                                <Text style={styles.error}>{prop.errors.confirmPassword}</Text>
-                                            )}
+                                            <TextInput
+                                                style={styles.input}
+                                                label="Confirm Password"
+                                                mode="flat"
+                                                contentStyle={styles.inputContent}
+                                                underlineStyle={{ display: "none" }}
+                                                activeUnderlineColor={Theme.colors.primary}
+                                                onChangeText={prop.handleChange("confirmPassword")}
+                                                onBlur={prop.handleBlur("confirmPassword")}
+                                                value={prop.values.confirmPassword}
+                                                autoCapitalize="none"
+                                                autoCorrect={false}
+                                                secureTextEntry={!showConfirmPassword}
+                                                theme={{ colors: { text: Theme.colors.text1, placeholder: Theme.colors.text2 } }}
+                                            />
+                                            <TouchableOpacity onPress={() => setShowConfirmPassword(!showConfirmPassword)}>
+                                                <Feather name={showConfirmPassword ? "eye" : "eye-off"} size={20} color={Theme.colors.text2} />
+                                            </TouchableOpacity>
+                                        </View>
+                                        {prop.touched.confirmPassword && prop.errors.confirmPassword && (
+                                            <Text style={styles.error}>{prop.errors.confirmPassword}</Text>
+                                        )}
 
-                                            {/* Address */}
-                                            <View style={styles.inputContainer}>
-                                                <View>
-                                                    <Feather name="map-pin" size={20} color={Theme.colors.text2} />
-                                                </View>
-                                                <TextInput
-                                                    style={styles.input}
-                                                    label="Address"
-                                                    mode="flat"
-                                                    contentStyle={styles.inputContent}
-                                                    underlineStyle={{ display: "none" }}
-                                                    activeUnderlineColor={Theme.colors.primary}
-                                                    onChangeText={prop.handleChange("address")}
-                                                    onBlur={prop.handleBlur("address")}
-                                                    value={prop.values.address}
-                                                    multiline={true}
-                                                    numberOfLines={2}
-                                                />
+                                        {/* Address */}
+                                        <View style={styles.inputContainer}>
+                                            <View>
+                                                <Feather name="map-pin" size={20} color={Theme.colors.text2} />
                                             </View>
-                                            {prop.touched.address && prop.errors.address && (
-                                                <Text style={styles.error}>{prop.errors.address}</Text>
-                                            )}
+                                            <TextInput
+                                                style={styles.input}
+                                                label="Address"
+                                                mode="flat"
+                                                contentStyle={styles.inputContent}
+                                                underlineStyle={{ display: "none" }}
+                                                activeUnderlineColor={Theme.colors.primary}
+                                                onChangeText={prop.handleChange("address")}
+                                                onBlur={prop.handleBlur("address")}
+                                                value={prop.values.address}
+                                                multiline={true}
+                                                numberOfLines={2}
+                                            />
+                                        </View>
+                                        {prop.touched.address && prop.errors.address && (
+                                            <Text style={styles.error}>{prop.errors.address}</Text>
+                                        )}
 
-                                            {/* Gender Dropdown */}
-                                            {/* <PaperProvider>
+                                        {/* Gender Dropdown */}
+                                        {/* <PaperProvider>
                                                 <View style={styles.dropdownContainer}>
                                                     <View style={styles.genderIconContainer}>
                                                         <Feather name="users" size={20} color={Theme.colors.text2} />
@@ -318,50 +330,49 @@ export function SignUp({ navigation }) {
                                                 )}
                                             </PaperProvider> */}
 
-                                            <TouchableOpacity
-                                                onPress={prop.handleSubmit}
-                                                style={styles.signupButton}
-                                            >
-                                                <Text style={styles.signupButtonText}>Sign Up</Text>
-                                            </TouchableOpacity>
-                                        </View>
-                                    );
-                                }}
-                            </Formik>
+                                        <TouchableOpacity
+                                            onPress={prop.handleSubmit}
+                                            style={styles.signupButton}
+                                        >
+                                            <Text style={styles.signupButtonText}>Sign Up</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                );
+                            }}
+                        </Formik>
+                    </View>
+
+                    <View style={styles.socialLoginContainer}>
+                        <View style={styles.divider}>
+                            <View style={styles.dividerLine} />
+                            <Text style={styles.dividerText}>Or sign up with</Text>
+                            <View style={styles.dividerLine} />
                         </View>
 
-                        <View style={styles.socialLoginContainer}>
-                            <View style={styles.divider}>
-                                <View style={styles.dividerLine} />
-                                <Text style={styles.dividerText}>Or sign up with</Text>
-                                <View style={styles.dividerLine} />
-                            </View>
+                        <View style={styles.socialButtons}>
+                            <TouchableOpacity style={styles.socialButton}>
+                                <FontAwesomeIcon icon={faGoogle}
+                                    style={styles.socialIcon}
+                                />
+                                <Text style={styles.socialButtonText}>Google</Text>
+                            </TouchableOpacity>
 
-                            <View style={styles.socialButtons}>
-                                <TouchableOpacity style={styles.socialButton}>
-                                    <FontAwesomeIcon icon={faGoogle}
-                                        style={styles.socialIcon}
-                                    />
-                                    <Text style={styles.socialButtonText}>Google</Text>
-                                </TouchableOpacity>
-
-                                <TouchableOpacity style={styles.socialButton}>
-                                    <FontAwesomeIcon icon={faXTwitter}
-                                        style={styles.socialIcon}
-                                    />
-                                    <Text style={styles.socialButtonText}>Twitter</Text>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-
-                        <View style={styles.loginContainer}>
-                            <Text style={styles.loginText}>Already have an account? </Text>
-                            <TouchableOpacity onPress={() => navigation.navigate("Login")}>
-                                <Text style={styles.loginLink}>Login</Text>
+                            <TouchableOpacity style={styles.socialButton}>
+                                <FontAwesomeIcon icon={faXTwitter}
+                                    style={styles.socialIcon}
+                                />
+                                <Text style={styles.socialButtonText}>Twitter</Text>
                             </TouchableOpacity>
                         </View>
-                    </ScrollView>
-                </KeyboardAvoidingView>
+                    </View>
+
+                    <View style={styles.loginContainer}>
+                        <Text style={styles.loginText}>Already have an account? </Text>
+                        <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+                            <Text style={styles.loginLink}>Login</Text>
+                        </TouchableOpacity>
+                    </View>
+                </ScrollView>
             </LinearGradient>
         </SafeAreaView>
     );

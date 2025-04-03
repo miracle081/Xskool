@@ -51,169 +51,166 @@ export function Login({ navigation, route }) {
                 colors={['#ffffff', Theme.colors.primary + 40]}
                 style={styles.gradient}
             >
-                <KeyboardAvoidingView
-                    behavior={Platform.OS === "ios" ? "padding" : "height"}
-                    style={styles.keyboardView}
-                >
-                    <ScrollView contentContainerStyle={styles.scrollView}>
-                        <View style={styles.logoContainer}>
-                            <Image
-                                source={require("../../assets/logo.jpg")}
-                                style={styles.logo}
-                                resizeMode="contain"
-                            />
-                        </View>
+                <ScrollView contentContainerStyle={styles.scrollView}>
+                    <View style={styles.logoContainer}>
+                        <Image
+                            source={require("../../assets/logo.jpg")}
+                            style={styles.logo}
+                            resizeMode="contain"
+                        />
+                    </View>
 
-                        <View style={styles.card}>
-                            <Formik
-                                initialValues={{ email: "", password: "" }}
-                                onSubmit={(value) => {
-                                    setPreloader(true);
-                                    signInWithEmailAndPassword(auth, value.email, value.password)
-                                        .then(() => {
-                                            setPreloader(false);
-                                            navigation.navigate("HomeScreen")
-                                        })
-                                        .catch(e => {
-                                            setPreloader(false);
-                                            console.log(e);
-                                            Alert.alert("Access denied!", errorMessage(e.code));
-                                        })
-                                }}
-                                validationSchema={validation}
-                            >
-                                {(prop) => {
-                                    return (
-                                        <View style={styles.form}>
-                                            <View style={styles.headerContainer}>
-                                                <Text style={styles.header}>Welcome Back</Text>
-                                                <Text style={styles.subheader}>
-                                                    {/* {uid + '\n'} */}
-                                                    Sign in to continue to YotaPoint
-                                                </Text>
+                    <View style={styles.card}>
+                        <Formik
+                            initialValues={{ email: "", password: "" }}
+                            onSubmit={(value) => {
+                                setPreloader(true);
+                                signInWithEmailAndPassword(auth, value.email, value.password)
+                                    .then((userCredential) => {
+                                        const user = userCredential.user.uid;
+                                        setPreloader(false);
+                                        setUserUID(user);
+                                        navigation.navigate("HomeScreen")
+                                    })
+                                    .catch(e => {
+                                        setPreloader(false);
+                                        console.log(e);
+                                        Alert.alert("Access denied!", errorMessage(e.code));
+                                    })
+                            }}
+                            validationSchema={validation}
+                        >
+                            {(prop) => {
+                                return (
+                                    <View style={styles.form}>
+                                        <View style={styles.headerContainer}>
+                                            <Text style={styles.header}>Welcome Back</Text>
+                                            <Text style={styles.subheader}>
+                                                {/* {uid + '\n'} */}
+                                                Sign in to continue to YotaPoint
+                                            </Text>
+                                        </View>
+
+                                        <View style={styles.inputContainer}>
+                                            <View>
+                                                <Feather name="mail" size={20} color={Theme.colors.text2} />
                                             </View>
+                                            <TextInput
+                                                style={styles.input}
+                                                label="Email Address"
+                                                mode="flat"
+                                                contentStyle={styles.inputContent}
+                                                underlineStyle={{ display: "none" }}
+                                                activeUnderlineColor={Theme.colors.primary}
+                                                onChangeText={prop.handleChange("email")}
+                                                onBlur={prop.handleBlur("email")}
+                                                value={prop.values.email}
+                                                autoCapitalize="none"
+                                                autoCorrect={false}
+                                            // theme={{ colors: { text: Theme.colors.text1, placeholder: "gray" } }}
+                                            />
+                                        </View>
+                                        {prop.touched.email && prop.errors.email && (
+                                            <Text style={styles.error}>{prop.errors.email}</Text>
+                                        )}
 
-                                            <View style={styles.inputContainer}>
-                                                <View>
-                                                    <Feather name="mail" size={20} color={Theme.colors.text2} />
-                                                </View>
-                                                <TextInput
-                                                    style={styles.input}
-                                                    label="Email Address"
-                                                    mode="flat"
-                                                    contentStyle={styles.inputContent}
-                                                    underlineStyle={{ display: "none" }}
-                                                    activeUnderlineColor={Theme.colors.primary}
-                                                    onChangeText={prop.handleChange("email")}
-                                                    onBlur={prop.handleBlur("email")}
-                                                    value={prop.values.email}
-                                                    autoCapitalize="none"
-                                                    autoCorrect={false}
-                                                // theme={{ colors: { text: Theme.colors.text1, placeholder: "gray" } }}
-                                                />
+                                        <View style={styles.inputContainer}>
+                                            <View>
+                                                <Feather name="lock" size={20} color={Theme.colors.text2} />
                                             </View>
-                                            {prop.touched.email && prop.errors.email && (
-                                                <Text style={styles.error}>{prop.errors.email}</Text>
-                                            )}
-
-                                            <View style={styles.inputContainer}>
-                                                <View>
-                                                    <Feather name="lock" size={20} color={Theme.colors.text2} />
-                                                </View>
-                                                <TextInput
-                                                    style={styles.input}
-                                                    label="Password"
-                                                    mode="flat"
-                                                    contentStyle={styles.inputContent}
-                                                    underlineStyle={{ display: "none" }}
-                                                    activeUnderlineColor={Theme.colors.primary}
-                                                    onChangeText={prop.handleChange("password")}
-                                                    onBlur={prop.handleBlur("password")}
-                                                    value={prop.values.password}
-                                                    autoCapitalize="none"
-                                                    autoCorrect={false}
-                                                    secureTextEntry={!showPassword}
-                                                    theme={{ colors: { text: Theme.colors.text1, placeholder: Theme.colors.text2 } }}
-                                                // right={
-                                                //     <TextInput.Icon
-                                                //         icon={() => (
-                                                //             <Feather
-                                                //                 name={!showPassword ? "eye-off" : "eye"}
-                                                //                 size={20}
-                                                //                 color={Theme.colors.text2}
-                                                //             />
-                                                //         )}
-                                                //         onPress={() => setShowPassword(!showPassword)}
-                                                //     />
-                                                // }
-                                                />
-                                                <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-                                                    <Feather name={showPassword ? "eye" : "eye-off"} size={20} color={Theme.colors.text2} />
-                                                </TouchableOpacity>
-                                            </View>
-                                            {prop.touched.password && prop.errors.password && (
-                                                <Text style={styles.error}>{prop.errors.password}</Text>
-                                            )}
-
-                                            <TouchableOpacity
-                                                style={styles.forgotContainer}
-                                                onPress={() => navigation.navigate("ForgotPassword")}
-                                            >
-                                                <Text style={styles.forgotText}>Forgot password?</Text>
-                                                <MaterialIcons
-                                                    name="arrow-right-alt"
-                                                    size={20}
-                                                    color={Theme.colors.primary}
-                                                />
-                                            </TouchableOpacity>
-
-                                            <TouchableOpacity
-                                                onPress={prop.handleSubmit}
-                                                style={styles.loginButton}
-                                            >
-                                                <Text style={styles.loginButtonText}>Login</Text>
+                                            <TextInput
+                                                style={styles.input}
+                                                label="Password"
+                                                mode="flat"
+                                                contentStyle={styles.inputContent}
+                                                underlineStyle={{ display: "none" }}
+                                                activeUnderlineColor={Theme.colors.primary}
+                                                onChangeText={prop.handleChange("password")}
+                                                onBlur={prop.handleBlur("password")}
+                                                value={prop.values.password}
+                                                autoCapitalize="none"
+                                                autoCorrect={false}
+                                                secureTextEntry={!showPassword}
+                                                theme={{ colors: { text: Theme.colors.text1, placeholder: Theme.colors.text2 } }}
+                                            // right={
+                                            //     <TextInput.Icon
+                                            //         icon={() => (
+                                            //             <Feather
+                                            //                 name={!showPassword ? "eye-off" : "eye"}
+                                            //                 size={20}
+                                            //                 color={Theme.colors.text2}
+                                            //             />
+                                            //         )}
+                                            //         onPress={() => setShowPassword(!showPassword)}
+                                            //     />
+                                            // }
+                                            />
+                                            <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+                                                <Feather name={showPassword ? "eye" : "eye-off"} size={20} color={Theme.colors.text2} />
                                             </TouchableOpacity>
                                         </View>
-                                    );
-                                }}
-                            </Formik>
+                                        {prop.touched.password && prop.errors.password && (
+                                            <Text style={styles.error}>{prop.errors.password}</Text>
+                                        )}
+
+                                        <TouchableOpacity
+                                            style={styles.forgotContainer}
+                                            onPress={() => navigation.navigate("ForgotPassword")}
+                                        >
+                                            <Text style={styles.forgotText}>Forgot password?</Text>
+                                            <MaterialIcons
+                                                name="arrow-right-alt"
+                                                size={20}
+                                                color={Theme.colors.primary}
+                                            />
+                                        </TouchableOpacity>
+
+                                        <TouchableOpacity
+                                            onPress={prop.handleSubmit}
+                                            style={styles.loginButton}
+                                        >
+                                            <Text style={styles.loginButtonText}>Login</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                );
+                            }}
+                        </Formik>
+                    </View>
+
+                    <View style={styles.socialLoginContainer}>
+                        <View style={styles.divider}>
+                            <View style={styles.dividerLine} />
+                            <Text style={styles.dividerText}>Or login with</Text>
+                            <View style={styles.dividerLine} />
                         </View>
 
-                        <View style={styles.socialLoginContainer}>
-                            <View style={styles.divider}>
-                                <View style={styles.dividerLine} />
-                                <Text style={styles.dividerText}>Or login with</Text>
-                                <View style={styles.dividerLine} />
-                            </View>
+                        <View style={styles.socialButtons}>
+                            <TouchableOpacity style={styles.socialButton}>
+                                <FontAwesomeIcon icon={faGoogle}
+                                    style={styles.socialIcon}
+                                />
+                                <Text style={styles.socialButtonText}>Google</Text>
+                            </TouchableOpacity>
 
-                            <View style={styles.socialButtons}>
-                                <TouchableOpacity style={styles.socialButton}>
-                                    <FontAwesomeIcon icon={faGoogle}
-                                        style={styles.socialIcon}
-                                    />
-                                    <Text style={styles.socialButtonText}>Google</Text>
-                                </TouchableOpacity>
-
-                                <TouchableOpacity
-                                    onPress={handleTwitterLogin}
-                                    style={styles.socialButton}
-                                >
-                                    <FontAwesomeIcon icon={faXTwitter}
-                                        style={styles.socialIcon}
-                                    />
-                                    <Text style={styles.socialButtonText}>Twitter</Text>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-
-                        <View style={styles.signupContainer}>
-                            <Text style={styles.signupText}>Don't have an account? </Text>
-                            <TouchableOpacity onPress={() => navigation.navigate("SignUp")}>
-                                <Text style={styles.signupLink}>Sign up</Text>
+                            <TouchableOpacity
+                                onPress={handleTwitterLogin}
+                                style={styles.socialButton}
+                            >
+                                <FontAwesomeIcon icon={faXTwitter}
+                                    style={styles.socialIcon}
+                                />
+                                <Text style={styles.socialButtonText}>Twitter</Text>
                             </TouchableOpacity>
                         </View>
-                    </ScrollView>
-                </KeyboardAvoidingView>
+                    </View>
+
+                    <View style={styles.signupContainer}>
+                        <Text style={styles.signupText}>Don't have an account? </Text>
+                        <TouchableOpacity onPress={() => navigation.navigate("SignUp")}>
+                            <Text style={styles.signupLink}>Sign up</Text>
+                        </TouchableOpacity>
+                    </View>
+                </ScrollView>
             </LinearGradient>
         </SafeAreaView>
     );
