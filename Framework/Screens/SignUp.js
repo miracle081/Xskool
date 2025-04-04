@@ -4,15 +4,16 @@ import {
     Image,
     KeyboardAvoidingView,
     Platform,
-    SafeAreaView,
+    SafeAreaView, Modal,
     ScrollView,
     StyleSheet,
     Text,
     TouchableOpacity,
     View,
     Dimensions,
+    Pressable,
 } from "react-native";
-import { TextInput, Menu, PaperProvider } from "react-native-paper";
+import { TextInput, Menu, PaperProvider, } from "react-native-paper";
 import { Theme } from "../Components/Theme";
 import { AppContext } from "../../global/globalVariables";
 import { Formik } from "formik";
@@ -46,7 +47,7 @@ export function SignUp({ navigation }) {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [menuVisible, setMenuVisible] = useState(false);
-    const [selectedGender, setSelectedGender] = useState("");
+
 
     return (
         <SafeAreaView style={styles.safeArea}>
@@ -73,7 +74,7 @@ export function SignUp({ navigation }) {
                                 password: "",
                                 confirmPassword: "",
                                 address: "",
-                                // gender: ""
+                                gender: ""
                             }}
                             onSubmit={(values) => {
                                 setPreloader(true);
@@ -87,7 +88,9 @@ export function SignUp({ navigation }) {
                                             phone: values.phone,
                                             email: values.email,
                                             address: values.address,
+                                            gender: values.gender,
                                             balance: 0,
+                                            image: null,
                                             createdAt: new Date().getTime(),
                                             userUID: user,
                                         }).then(() => {
@@ -288,47 +291,27 @@ export function SignUp({ navigation }) {
                                         )}
 
                                         {/* Gender Dropdown */}
-                                        {/* <PaperProvider>
-                                                <View style={styles.dropdownContainer}>
-                                                    <View style={styles.genderIconContainer}>
-                                                        <Feather name="users" size={20} color={Theme.colors.text2} />
-                                                    </View>
-                                                    <Menu
-                                                        visible={menuVisible}
-                                                        onDismiss={() => setMenuVisible(false)}
-                                                        anchor={
-                                                            <TouchableOpacity
-                                                                style={styles.dropdownButton}
-                                                                onPress={() => setMenuVisible(true)}
-                                                            >
-                                                                <Text style={[
-                                                                    styles.dropdownButtonText,
-                                                                    !prop.values.gender && { color: Theme.colors.text2 }
-                                                                ]}>
-                                                                    {prop.values.gender || "Select Gender"}
-                                                                </Text>
-                                                                <MaterialIcons name="arrow-drop-down" size={24} color={Theme.colors.text2} />
-                                                            </TouchableOpacity>
-                                                        }
-                                                    >
-                                                        <Menu.Item onPress={() => {
-                                                            prop.setFieldValue("gender", "Male");
-                                                            setMenuVisible(false);
-                                                        }} title="Male" />
-                                                        <Menu.Item onPress={() => {
-                                                            prop.setFieldValue("gender", "Female");
-                                                            setMenuVisible(false);
-                                                        }} title="Female" />
-                                                        <Menu.Item onPress={() => {
-                                                            prop.setFieldValue("gender", "Other");
-                                                            setMenuVisible(false);
-                                                        }} title="Other" />
-                                                    </Menu>
-                                                </View>
-                                                {prop.touched.gender && prop.errors.gender && (
-                                                    <Text style={styles.error}>{prop.errors.gender}</Text>
-                                                )}
-                                            </PaperProvider> */}
+                                        <View style={styles.dropdownContainer}>
+                                            <View style={styles.genderIconContainer}>
+                                                <Feather name="users" size={20} color={Theme.colors.text2} />
+                                            </View>
+                                            <TouchableOpacity
+                                                style={styles.dropdownButton}
+                                                onPress={() => setMenuVisible(true)}
+                                            >
+                                                <Text style={[
+                                                    styles.dropdownButtonText,
+                                                    !prop.values.gender && { color: Theme.colors.text2 }
+                                                ]}>
+                                                    {prop.values.gender || "Select Gender"}
+                                                </Text>
+                                                <MaterialIcons name="arrow-drop-down" size={24} color={Theme.colors.text2} />
+                                            </TouchableOpacity>
+
+                                        </View>
+                                        {prop.touched.gender && prop.errors.gender && (
+                                            <Text style={styles.error}>{prop.errors.gender}</Text>
+                                        )}
 
                                         <TouchableOpacity
                                             onPress={prop.handleSubmit}
@@ -336,6 +319,27 @@ export function SignUp({ navigation }) {
                                         >
                                             <Text style={styles.signupButtonText}>Sign Up</Text>
                                         </TouchableOpacity>
+
+                                        <Modal
+                                            visible={menuVisible}
+                                            transparent={true}
+                                            animationType='slide'
+                                        >
+                                            <View style={{ flex: 1, backgroundColor: "#0000008b" }}>
+                                                <Pressable onPress={() => setMenuVisible(false)} style={{ flex: 1 }}></Pressable>
+                                                <View style={{ padding: 20, backgroundColor: "white", borderTopLeftRadius: 20, borderTopRightRadius: 20 }}>
+                                                    <View style={{ paddingBottom: 20, gap: 10 }}>
+                                                        <TouchableOpacity style={[styles.dropdownButton, { flex: null }]} onPress={() => { prop.setFieldValue("gender", "Male"); setMenuVisible(false); }}>
+                                                            <Text style={[styles.dropdownButtonText, { color: Theme.colors.text2 }]}>Male</Text>
+                                                        </TouchableOpacity>
+                                                        <TouchableOpacity style={[styles.dropdownButton, { flex: null }]} onPress={() => { prop.setFieldValue("gender", "Female"); setMenuVisible(false); }}>
+                                                            <Text style={[styles.dropdownButtonText, { color: Theme.colors.text2 }]}>Female</Text>
+                                                        </TouchableOpacity>
+                                                        {/* <AppButton onPress={() => setMenuVisible(false)} style={{ marginTop: 20 }}>Close</AppButton> */}
+                                                    </View>
+                                                </View>
+                                            </View>
+                                        </Modal>
                                     </View>
                                 );
                             }}

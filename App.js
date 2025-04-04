@@ -55,10 +55,7 @@ export default function App() {
   return (
     <RootSiblingParent>
       <AppProvider>
-        <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-          style={{ flex: 1 }}
-        >
+        <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
           <StackNavigator />
           <Preloader />
         </KeyboardAvoidingView>

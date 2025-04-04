@@ -101,7 +101,7 @@ function Home() {
                     <TouchableOpacity
                         key={index}
                         style={styles.gridItem}
-                        onPress={() => { setVisibility(true); setUserUID((Math.random() * 90000000).toFixed(2)) }}
+                        onPress={() => setVisibility(true)}
                     >
                         <View style={styles.gridItemContent}>
                             <FontAwesomeIcon
@@ -205,6 +205,7 @@ const styles = StyleSheet.create({
 const Tab = createBottomTabNavigator()
 
 export function HomeScreen() {
+    const { userInfo } = useContext(AppContext)
     return (
         <Tab.Navigator
             screenOptions={({ route }) => ({
@@ -229,7 +230,7 @@ export function HomeScreen() {
         >
             <Tab.Screen name='Home' component={Home} />
             <Tab.Screen name='Courses' component={Courses} />
-            <Tab.Screen name='Profile' component={Profile} />
+            <Tab.Screen name='Profile' component={Profile} options={{ title: userInfo.firstname }} />
         </Tab.Navigator>
     )
 }
