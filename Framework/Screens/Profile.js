@@ -1,8 +1,10 @@
 import React, { useContext, useState, } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, Dimensions } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { AppContext } from '../../global/globalVariables';
+import { formatMoney } from '../Components/FormatMoney';
+import { Theme } from '../Components/Theme';
 
 export const Profile = () => {
     const { userUID, userInfo, setPreloader } = useContext(AppContext)
@@ -28,6 +30,22 @@ export const Profile = () => {
                 </TouchableOpacity>
             </View>
 
+            <View style={{ margin: 20, borderColor: Theme.colors.line, borderWidth: 1, borderRadius: 10, padding: 10 }}>
+                <View style={{ justifyContent: "space-between", flexDirection: "row", alignItems: "center" }}>
+                    <View style={{}}>
+                        <Text style={{ fontSize: 15, fontFamily: Theme.fonts.text500, }}>Wallet Balance</Text>
+
+                        <Text style={{ fontSize: 13, fontFamily: Theme.fonts.text700, }}>₦<Text style={{ fontSize: 30 }}>{formatMoney(userInfo.balance)}</Text></Text>
+                    </View>
+                    <TouchableOpacity onPress={() => navigation.navigate("FundAccount")} style={{ alignItems: "center" }}>
+                        <View style={{ backgroundColor: Theme.colors.primary + 20, borderRadius: 10, padding: 5 }}>
+                            <Ionicons name="arrow-down" size={20} color={Theme.colors.primary} />
+                        </View>
+                        <Text style={{ fontFamily: Theme.fonts.text500, fontSize: 14, color: Theme.colors.text1 }}>Add Funds</Text>
+                    </TouchableOpacity>
+                </View>
+
+            </View>
 
             <View style={styles.profileActions}>
                 <TouchableOpacity style={styles.actionItem} onPress={handleEditProfile}>
@@ -95,7 +113,7 @@ const styles = StyleSheet.create({
         color: '#007AFF',
     },
     profileActions: {
-        marginTop: 20,
+        marginTop: 10,
     },
     actionItem: {
         flexDirection: 'row',
