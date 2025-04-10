@@ -82,7 +82,7 @@ export function SignUp({ navigation }) {
                                     .then((userCredential) => {
                                         const user = userCredential.user.uid;
                                         //
-                                        setDoc(doc(db, "users", user), {
+                                        setDoc(doc(db, "Xusers", user), {
                                             firstname: values.firstname,
                                             lastname: values.lastname,
                                             phone: values.phone,

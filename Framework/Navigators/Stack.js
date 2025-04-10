@@ -14,7 +14,7 @@ export function StackNavigator() {
 
     return (
         <NavigationContainer>
-            <Stack.Navigator initialRouteName={"HomeScreen"}>
+            <Stack.Navigator initialRouteName={"SignUp"}>
                 <Stack.Screen name="Intro" component={Intro} options={{ headerShown: false }} />
                 <Stack.Screen name="HomeScreen" component={HomeScreen} options={{ headerShown: false }} />
                 <Stack.Screen name="Login" component={Login} />

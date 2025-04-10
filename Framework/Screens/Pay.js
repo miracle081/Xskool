@@ -21,7 +21,7 @@ export function Pay({ navigation, route }) {
                 }}
                 onSuccess={() => {
                     setPreloader(true);
-                    updateDoc(doc(db, "users", userUID), {
+                    updateDoc(doc(db, "Xusers", userUID), {
                         balance: amount + Number(userInfo.balance)
                     }).then(() => {
                         setPreloader(false);

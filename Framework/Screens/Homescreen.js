@@ -34,7 +34,7 @@ function Home() {
 
     useEffect(() => {
         setPreloader(true);
-        // getDoc(doc(db, "users", userUID))
+        // getDoc(doc(db, "", userUID))
         //     .then((doc) => {
         //         if (doc.exists()) {
         //             setUserInfo(doc.data())
@@ -46,7 +46,7 @@ function Home() {
         //         console.log(e);
         //         Alert.alert("Registration Failed!", errorMessage(e.code));
         //     });
-        onSnapshot(doc(db, "users", userUID), (doc) => {
+        onSnapshot(doc(db, "Xusers", userUID), (doc) => {
             setPreloader(false);
             if (doc.exists()) {
                 setUserInfo(doc.data())
@@ -61,7 +61,8 @@ function Home() {
             {/* Header Section */}
             <View style={styles.headerContainer}>
                 <Image
-                    source={require("../../assets/Xskool-v-gold.png")}
+                    source={{ uri: userInfo.image }}
+                    defaultSource={require('../../assets/user.png')}
                     style={styles.logo}
                 />
                 <View>
