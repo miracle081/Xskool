@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Sender Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        button {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        #status {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 4px;
+        }
+
+        .success {
+            background-color: #dff0d8;
+            color: #3c763d;
+        }
+
+        .error {
+            background-color: #f2dede;
+            color: #a94442;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Email Sender Test</h1>
+    <p>Click the button below to send a test email:</p>
+    <button id="sendButton">Send Test Email</button>
+    <div id="status"></div>
+
+    <script>
+        function otpEmailTemplate() {
+            return `
+                <p>Dear Miracle,</p>
+
+                <p>A purchase transaction has been initiated on your YotaPoint account. To authorize this transaction, please use the following One-Time Password (OTP):</p>
+
+                <p style="font-size:22px;"><strong>12345</strong></p>
+
+                <p>This OTP is valid for 5 minutes. Please enter it on the authorization screen to complete your purchase.</p>
+
+                <p>If you did not initiate this transaction, please disregard this email and contact our support team immediately at support@yotapoint.com</p>
+
+                <p>For your security, please do not share this OTP with anyone.</p>
+
+                <p>Thank you for using Yotapoint.</p>
+
+                <p>Sincerely,</p>
+
+                <p>The Yotapoint Team</p>
+            `;
+        }
+
+        const sendEmail = async (emailData) => {
+            try {
+                console.log('Sending email...');
+
+                const response = await fetch('https://yotapoint-web.vercel.app/api/send-email/route.js', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify(emailData),
+                });
+
+                const responseData = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(responseData.error || 'Failed to send email');
+                }
+
+                console.log('Email sent successfully:', responseData);
+                return responseData;
+            } catch (error) {
+                console.error('Error sending email:', error);
+                throw error;
+            }
+        };
+
+        const handleSendEmail = async () => {
+            try {
+                await sendEmail({
+                    to: 'miracleobafemi09@gmail.com',
+                    subject: 'Authorize Your Purchase - Yotapoint',
+                    text: 'If you did not initiate a purchase order, you should simply ignore this email',
+                    html: otpEmailTemplate() // Your email template function
+                });
+
+                // Handle success
+                alert('Email sent successfully');
+            } catch (error) {
+                // Handle error
+                alert(error.message);
+            }
+        };
+
+        document.getElementById('sendButton').addEventListener('click', () => {
+            handleSendEmail()
+            document.getElementById('status').innerHTML = '<div class="success">Sending email...</div>';
+        });
+    </script>
+</body>
+
+</html>

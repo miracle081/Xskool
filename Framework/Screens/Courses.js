@@ -10,13 +10,12 @@ import { Ionicons } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Profile } from './Profile';
 import Carousel from 'react-native-reanimated-carousel';
+import { useContext } from 'react';
+import { AppContext } from '../../global/globalVariables';
 
 
-export function Courses() {
-
-    const screenWidth = Dimensions.get("screen").width
-
-
+export function Courses({ navigation }) {
+    const { userUID, setUserUID, setCourses, courses, setUserInfo, userInfo, setPreloader } = useContext(AppContext)
 
     return (
         <SafeAreaView style={styles.container}>
@@ -27,28 +26,23 @@ export function Courses() {
                 </View>
 
                 <View style={styles.gridContainer}>
-                    {[
-                        { icon: faBook, title: "Web Development" },
-                        { icon: faBook, title: 'Data Science' },
-                        { icon: faBook, title: 'Cybersecurity' },
-                        { icon: faBook, title: 'App Development' },
-                        { icon: faBook, title: 'JavaScripts' },
-                        { icon: faBook, title: 'HTML' },
-                        { icon: faBook, title: 'CSS' },
-
-                    ].map((item, index) => (
+                    {courses.map((item, index) => (
                         <TouchableOpacity
                             key={index}
                             style={styles.gridItem}
-                        // You can add onPress handlers here later
+                            onPress={() => {
+                                navigation.navigate("CourseDetails", { item: item })
+                            }}
+                            activeOpacity={0.8}
                         >
                             <View style={styles.gridItemContent}>
-                                <FontAwesomeIcon
-                                    icon={item.icon}
-                                    size={30}
-                                    color='#4A90E2'
+                                {/* <FontAwesomeIcon size={30} color='#4A90E2' /> */}
+                                <Image
+                                    source={{ uri: item.image }}
+                                    style={{ width: "100%", height: 120, borderRadius: 10 }}
                                 />
                                 <Text style={styles.gridItemText}>{item.title}</Text>
+                                <Text style={{ color: "gray", fontFamily: Theme.fonts.text600 }}>{item.code}</Text>
                             </View>
                         </TouchableOpacity>
                     ))}
@@ -84,7 +78,7 @@ const styles = StyleSheet.create({
     },
     gridItem: {
         backgroundColor: 'white',
-        padding: 16,
+        padding: 10,
         marginBottom: 8,
         borderRadius: 8,
         elevation: 2,
@@ -95,16 +89,14 @@ const styles = StyleSheet.create({
     },
     gridItemContent: {
         flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
+        // flexDirection: 'row',
+        // alignItems: 'center',
         padding: 10,
         color: '#4A90E2',
+        gap: 10,
     },
     gridItemText: {
-        marginTop: 8,
-        fontSize: 14,
-        color: '#4A90E2',
+        fontSize: 16,
         fontFamily: Theme.fonts.text600,
-        textAlign: 'center',
     },
 });

@@ -4,7 +4,7 @@ const AppContext = createContext();
 
 function AppProvider({ children }) {
     const [docID, setDocID] = useState("");
-    const [userUID, setUserUID] = useState("r43jpG41poZe4Xq0Xnx3ZFX6oN22");
+    const [userUID, setUserUID] = useState("hmywoQjvCyYdt1XBHunrSO2fLOR2");
     const [preloader, setPreloader] = useState(false);
     const [userInfo, setUserInfo] = useState({ image: null, firstname: "", lastname: "", email: "" });
     const [courses, setCourses] = useState([]);
