@@ -56,10 +56,10 @@ export const Profile = () => {
                     <MaterialIcons name="chevron-right" size={24} color="gray" />
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.actionItem} >
+                <TouchableOpacity onPress={() => navigation.navigate("EnrolledCourses")} style={styles.actionItem} >
                     <View style={styles.actionItemContent}>
                         <MaterialIcons name="assignment-add" size={24} color="#007AFF" />
-                        <Text style={styles.actionText}> AddCourses</Text>
+                        <Text style={styles.actionText}>Enrolled Courses</Text>
                     </View>
                     <MaterialIcons name="chevron-right" size={24} color="gray" />
                 </TouchableOpacity>

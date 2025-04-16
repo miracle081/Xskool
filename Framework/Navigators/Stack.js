@@ -8,6 +8,7 @@ import { EditProfile } from "../Screens/EditProfile"
 import { FundAccount } from "../Screens/FundAccount"
 import { Pay } from "../Screens/Pay"
 import { CourseDetails } from "../Screens/CourseDetails"
+import { EnrolledCourses } from "../Screens/EnrolledCourses"
 
 const Stack = createNativeStackNavigator()
 
@@ -24,6 +25,7 @@ export function StackNavigator() {
                 <Stack.Screen name="FundAccount" component={FundAccount} options={{ title: "" }} />
                 <Stack.Screen name="Pay" component={Pay} options={{ title: "" }} />
                 <Stack.Screen name="CourseDetails" component={CourseDetails} options={{ title: "Course Details" }} />
+                <Stack.Screen name="EnrolledCourses" component={EnrolledCourses} options={{ title: "Enrolled Courses" }} />
             </Stack.Navigator>
         </NavigationContainer>
     )
